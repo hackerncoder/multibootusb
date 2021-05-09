@@ -128,13 +128,26 @@ Once you have a bootable USB drive, it only remains to copy the bootable files (
 
 ## Testing USB drive with QEMU
 
-To test the newly created USB drive in a virtual environment with [QEMU][], run:
+[QEMU][] provides a virtual environment capable of booting directly from the newly created USB drive.
+
+In most installations, the **Legacy PC BIOS** mode will work by default with no additional setup, run:
 
 ```
-qemu-system-x86_64 -enable-kvm -rtc base=localtime -m 2G -vga std -drive file=<device>,readonly,cache=none,format=raw,if=virtio
+qemu-system-x86_64 -enable-kvm \
+  -rtc base=localtime -m 1G -vga std \
+  -drive file=<device>,readonly,cache=none,format=raw,if=virtio
 ```
 
-Where `<device>` is the name of the USB device (e.g. */dev/sdh*). Run `mount` to get this information.
+Testing **UEFI** boot mode is also possible with an additional firmware
+called [Tianocore OVMF][tianocore-ovmf] (not included with QEMU):
+
+```
+qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF.fd \
+  -rtc base=localtime -m 1G -vga std \
+  -drive file=<device>,readonly,cache=none,format=raw,if=virtio
+```
+
+As usual, substitute `<device>` with the name of the USB device (e.g. */dev/sdh*).
 
 
 ## Resources
@@ -167,4 +180,5 @@ Where `<device>` is the name of the USB device (e.g. */dev/sdh*). Run `mount` to
 [qemu]: http://qemu.org/
 [qemudocs]: https://qemu.weilnetz.de/doc/qemu-doc.html
 [sgdisk]: http://www.rodsbooks.com/gdisk/sgdisk.html
+[tianocore-ovmf]: https://github.com/tianocore/edk2/blob/master/OvmfPkg/README
 [usingmemdisk]: https://wiki.archlinux.org/index.php/Multiboot_USB_drive#Using_Syslinux_and_memdisk
